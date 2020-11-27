@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1082181394241",
+    "firebase_url": "https://iot-autowindow.firebaseio.com",
+    "project_id": "iot-autowindow",
+    "storage_bucket": "iot-autowindow.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082181394241:android:6f3ee5659ab2948ee68bc0",
+        "android_client_info": {
+          "package_name": "com.example.iot_autowindow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1082181394241-o6l2ar83smli1d7d0iioq73kkc5ifeds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeZShrX9bK5CxF2yTR99rSHdxgTz-s1T4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1082181394241-o6l2ar83smli1d7d0iioq73kkc5ifeds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
