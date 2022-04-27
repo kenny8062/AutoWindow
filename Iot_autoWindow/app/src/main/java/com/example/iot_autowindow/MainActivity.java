@@ -3,10 +3,14 @@ package com.example.iot_autowindow;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -40,11 +44,17 @@ public class MainActivity extends AppCompatActivity {
     TextView window;
     TextView out_temp;
     TextView out_humid;
+    TextView home_region;
+    String window_state="";
+    String region="";
+    ArrayList<String> all_location_data = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        region="";
         context=this;
+        //Firebase 토큰값 확인
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.w("FirebaseSettingEx", "getInstanceId failed", task.getException());
@@ -56,33 +66,56 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(token);
             }
         });
+        //s3데이터 레이아웃 적용
+        downloadWithTransferUtility("text.txt","sensor-esp32");
 
-        downloadWithTransferUtility();
         Button button_open=findViewById(R.id.button2);
         Button button_close=findViewById(R.id.button);
+        Button button_location=findViewById(R.id.button3);
+        ImageView button_update=findViewById(R.id.bt_update);
+        button_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=getIntent();
+                finish();
+                startActivity(intent);
+            }
+        });
+        //창문열기 버튼
         button_open.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 try {
                     uploadWithTransferUtility("열림");
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
+        //창문닫기 버튼
         button_close.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 try {
                     uploadWithTransferUtility("닫힘");
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
+        //지역 선택 액티비티 이동
+        button_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getApplicationContext(),Location_select.class);
+                startActivity(intent);
+            }
+        });
     }
-
-    private void downloadWithTransferUtility(){
+    //S3 파일 다운로드
+    private void downloadWithTransferUtility(String filename,String bucketname){
         CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
                 getApplicationContext(),
                 "ap-northeast-2:f80fe4d0-e4d3-4e09-be94-f5d452722201", // 자격 증명 풀 ID
@@ -95,44 +128,44 @@ public class MainActivity extends AppCompatActivity {
                         .defaultBucket("sensor-esp32")
                         .s3Client(new AmazonS3Client(credentialsProvider, Region.getRegion(Regions.AP_NORTHEAST_2)))
                         .build();
-
+        TransferUtility transferUtility2=TransferUtility.builder()
+                .context(getApplicationContext())
+                .defaultBucket("all-region-data")
+                .s3Client(new AmazonS3Client(credentialsProvider,Region.getRegion(Regions.AP_NORTHEAST_2)))
+                .build();
         File file = new File(getFilesDir(),"text.txt");
-        File file2 = new File(getFilesDir(),"text2.txt");
-        String string="text.txt";
-        String string2="text2.txt";
-        TransferObserver downloadObserver =
-                transferUtility.download(
-                        string,
-                        file);
+        File file2 = new File(getFilesDir(),"location_data.txt");
+        File file3 = new File(getFilesDir(),"all_location_data.txt");
+        TransferObserver downloadObserver = transferUtility.download("text.txt", file);
+        TransferObserver downloadObserver2 = transferUtility.download("location_data.txt",file2);
+        TransferObserver downloadObserver3 = transferUtility2.download("all_location_data.txt",file3);
 
-        TransferObserver downloadObserver2 =
-                transferUtility.download(
-                        string2,
-                        file2);
-
+        //내부 온도 및 습도 파일 다운
         downloadObserver.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 try {
                     BufferedReader buf = new BufferedReader(new FileReader(file));
-                    String line=null;
+                    String line = null;
                     ArrayList<String> tv = new ArrayList<>();
-                    while ((line=buf.readLine())!=null){
+                    while ((line = buf.readLine()) != null) {
                         tv.add(line);
                     }
-                    for(int i=0;i<tv.size();i++){
+                    for (int i = 0; i < tv.size(); i++) {
                         System.out.println(tv.get(i));
                     }
-                    String[] str=tv.get(0).split(", ");
-                    str[0]=Double.toString(Math.round(Double.parseDouble(str[0])*10)/10.0);
-                    str[1]=Double.toString(Math.round(Double.parseDouble(str[1])*10)/10.0);
-                    home_temp =findViewById(R.id.home_temp);
-                    home_humid =findViewById(R.id.home_humid);
-                    window =findViewById(R.id.home_door);
-                    home_temp.setText("실내온도 : "+str[0]+ "도");
-                    home_humid.setText("실내습도 : "+str[1] + "%");
-                    if(str[2].equals("1")) window.setText("현재 문이 열려있습니다.");
+                    String[] str = tv.get(0).split(", ");
+                    str[0] = Double.toString(Math.round(Double.parseDouble(str[0]) * 10) / 10.0);
+                    str[1] = Double.toString(Math.round(Double.parseDouble(str[1]) * 10) / 10.0);
+                    window_state=str[2];
+                    home_temp = findViewById(R.id.home_temp);
+                    home_humid = findViewById(R.id.home_humid);
+                    window = findViewById(R.id.home_door);
+                    home_temp.setText("실내온도 : " + str[0] + "도");
+                    home_humid.setText("실내습도 : " + str[1] + "%");
+                    if (str[2].equals("1")) window.setText("현재 문이 열려있습니다.");
                     else window.setText("현재 문이 닫혀있습니다.");
+                    buf.close();
                 }catch (FileNotFoundException e){
                     e.printStackTrace();
                 }catch (IOException e) {
@@ -150,24 +183,24 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("AWS", "DOWNLOAD ERROR - - ID: $id - - EX: ${ex.message.toString()}");
             }
         });
-
+        //이전에 선택했던 지역 저장한 파일 다운
         downloadObserver2.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 try {
-                    BufferedReader buf2 = new BufferedReader(new FileReader(file2));
-                    String line2;
-                    ArrayList<String> tv2 = new ArrayList<>();
-                    while ((line2=buf2.readLine())!=null){
-                        tv2.add(line2);
+                    BufferedReader buf = new BufferedReader(new FileReader(file2));
+                    String line = null;
+                    ArrayList<String> tv = new ArrayList<>();
+                    while ((line = buf.readLine()) != null) {
+                        tv.add(line);
                     }
-                    for(int i=0;i<tv2.size();i++){
-                        System.out.println(tv2.get(i));
+                    for (int i = 0; i < tv.size(); i++) {
+                        System.out.println(tv.get(i));
                     }
-                    out_temp =findViewById(R.id.out_temp);
-                    out_humid =findViewById(R.id.out_humid);
-                    out_temp.setText("외부온도 : 20도");
-                    out_humid.setText("외부습도 : 40%");
+                    region=tv.get(0);
+                    region=region.substring(1);
+                    buf.close();
+                    System.out.println(region);
                 }catch (FileNotFoundException e){
                     e.printStackTrace();
                 }catch (IOException e) {
@@ -177,19 +210,77 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                Log.d("AWS", "DOWNLOAD - - ID: $id, percent done = $done");
+
             }
 
             @Override
             public void onError(int id, Exception ex) {
-                Log.d("AWS", "DOWNLOAD ERROR - - ID: $id - - EX: ${ex.message.toString()}");
+
             }
         });
+        //S3에서 크롤링한 데이터를 가져와서 선택한 지역의 온도 및 습도를 찾아서 적용
+        downloadObserver3.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                try {
+                    BufferedReader buf = new BufferedReader(new FileReader(file3));
+                    String line = null;
+                    ArrayList<String> tv = new ArrayList<>();
+                    while ((line = buf.readLine()) != null) {
+                        tv.add(line);
+                    }
+                    for (int i = 0; i < tv.size(); i++) {
+                        System.out.println(tv.get(i));
+                    }
+                    int i=tv.get(0).indexOf(region);
+                    int j=tv.get(0).indexOf("]",i);
+                    System.out.println(region);
+                    String region_str="";
+                    for(int k=i-1;k<j;k++){
+                        region_str +=tv.get(0).charAt(k);
+                    }
+                    System.out.println(region_str);
+                    String[] str = region_str.split(", ");
+                    if(region.equals("")){
+                        region="서울";
+                    }
+                    System.out.println(str.length);
+                    System.out.println(str[0]);
+                    for (int q=0;q<str.length;q++){
+                        str[q]=str[q].substring(1);
+                        str[q]=str[q].substring(0,str[q].length()-1);
+                        System.out.println(str[q]);
+                    }
+                    out_temp =findViewById(R.id.out_temp);
+                    out_humid =findViewById(R.id.out_humid);
+                    home_region=findViewById(R.id.home_address);
+                    out_temp.setText("외부온도 : " + str[1]+"도");
+                    out_humid.setText("외부습도 : "+str[2]+"%");
+                    home_region.setText(region);
+                    buf.close();
+                }catch (FileNotFoundException e){
+                    e.printStackTrace();
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+
+            }
+        });
+
+
+
     }
+    //S3에 창문 제어를 위한 업로드
     public void uploadWithTransferUtility(String str) throws IOException {
-        String filename="door.txt";
-        FileOutputStream fos = null ;
-        BufferedOutputStream bufos = null ;
         File file = new File(getFilesDir(),"text.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
         String line;
@@ -203,11 +294,10 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<tv.size();i++){
             System.out.println(tv.get(i));
         }
-
         String[] str2=tv.get(0).split(", ");
         System.out.println(str2[2]);
-        if(str.equals("열림") &&str2[2].equals("0")) dummy+="1";
-        else if(str.equals("닫힘")&&str2[2].equals("1")) dummy +="0";
+        if(str.equals("열림") &&str2[2].equals("0")) dummy+="{ \"state\" : {\"order\" : \"OPEN\"}}";
+        else if(str.equals("닫힘")&&str2[2].equals("1")) dummy +="{ \"state\" : {\"order\" : \"CLOSE\"}}";
         else return;
         br.close();
 
@@ -227,12 +317,12 @@ public class MainActivity extends AppCompatActivity {
         TransferUtility transferUtility =
                 TransferUtility.builder()
                         .context(getApplicationContext())
-                        .defaultBucket("android-to-esp32")
+                        .defaultBucket("onoff")
                         .s3Client(new AmazonS3Client(credentialsProvider, Region.getRegion(Regions.AP_NORTHEAST_2)))
                         .build();
         TransferObserver uploadObserver =
                 transferUtility.upload(
-                        "android-to-esp32",
+                        "onoff",
                         "door.txt", file2);
         uploadObserver.setTransferListener(new TransferListener() {
             @Override

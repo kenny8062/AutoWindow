@@ -5,90 +5,241 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="15dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom"
+        android:background="@drawable/item_button_rounding_true"
+        android:backgroundTint="@color/grayDark">
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="고객 집 위치 : "
+            android:textSize="15sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/right"
+            app:layout_constraintStart_toStartOf="@id/left"
+            app:layout_constraintEnd_toStartOf="@id/home_address"
+            android:textColor="@color/white"
+            android:layout_marginVertical="25dp"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            />
+
+        <TextView
+            android:id="@+id/home_address"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="경기도 고양시"
+            android:textSize="15sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/right"
+            app:layout_constraintStart_toEndOf="@id/address"
+            app:layout_constraintEnd_toEndOf="@id/right"
+            android:textColor="@color/white"
+            android:layout_marginVertical="25dp"
+            />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="horizontal">
+            android:id="@+id/left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/right"
+            app:layout_constraintBottom_toTopOf="@id/home_door"
+            android:layout_marginVertical="15dp"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/item_button_rounding_true"
+            android:backgroundTint="@color/gray"
+            tools:ignore="MissingConstraints">
+
+            <ImageView
+                android:id="@+id/home"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_weight="2"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="15dp"
+                android:src="@drawable/ic_roof"/>
 
             <TextView
                 android:id="@+id/home_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
+                android:textSize="15sp"
+                android:textColor="@color/black"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="15dp"
                 android:text="TextView" />
-
-            <TextView
-                android:id="@+id/out_temp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:layout_gravity="center_horizontal"
-                android:text="TextView" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/home_humid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
+                android:textSize="15sp"
+                android:textColor="@color/black"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="15dp"
                 android:text="TextView" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="@id/left"
+            app:layout_constraintStart_toEndOf="@id/left"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/left"
+            android:layout_marginVertical="15dp"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/item_button_rounding_true"
+            android:backgroundTint="@color/gray"
+            tools:ignore="MissingConstraints">
+
+            <ImageView
+                android:id="@+id/outside"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_weight="2"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="15dp"
+                android:src="@drawable/ic_out"/>
+
+            <TextView
+                android:id="@+id/out_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="15dp"
+                android:text="TextView" />
+
             <TextView
                 android:id="@+id/out_humid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:layout_gravity="center_horizontal"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="15dp"
                 android:text="TextView" />
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/home_door"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:gravity="center_horizontal"
-            android:text="TextView"
-            tools:layout_editor_absoluteY="183dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="현재 창문이 닫혔습니다."
+            android:textSize="15sp"
+            app:layout_constraintTop_toBottomOf="@id/left"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/left"
+            app:layout_constraintEnd_toEndOf="@id/right"
+            android:textColor="@color/white"
+            android:layout_marginVertical="25dp"
+            />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="horizontal">
+        <ImageView
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:id="@+id/round_update"
+            android:background="@drawable/item_button_rounding_true"
+            android:backgroundTint="@color/yellow"
+            app:layout_constraintStart_toEndOf="@id/home_door"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/home_door"
+            app:layout_constraintBottom_toBottomOf="@id/home_door"/>
 
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="열기" />
-
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="닫기" />
-        </LinearLayout>
-    </LinearLayout>
+        <ImageView
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:id="@+id/bt_update"
+            android:src="@drawable/update"
+            app:layout_constraintStart_toStartOf="@id/round_update"
+            android:layout_marginStart="2dp"
+            app:layout_constraintTop_toTopOf="@id/round_update"
+            app:layout_constraintEnd_toEndOf="@id/round_update"
+            app:layout_constraintBottom_toBottomOf="@id/round_update"
+            android:layout_marginLeft="2dp" />
 
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        tools:ignore="MissingConstraints"
+        app:layout_constraintTop_toBottomOf="@id/top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button3"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="15dp">
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/item_button_rounding_true"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="열기"
+            android:layout_marginRight="10dp" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:layout_constraintTop_toTopOf="@id/button2"
+            app:layout_constraintStart_toEndOf="@id/button2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/button2"
+            android:background="@drawable/item_button_rounding_true"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="닫기" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:layout_constraintTop_toTopOf="@id/bottom"
+        app:layout_constraintBottom_toBottomOf="@id/bottom"
+        app:layout_constraintStart_toEndOf="@id/bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/item_button_rounding_true"
+        android:backgroundTint="@color/yellow"
+        android:text="지역" />
 </androidx.constraintlayout.widget.ConstraintLayout>

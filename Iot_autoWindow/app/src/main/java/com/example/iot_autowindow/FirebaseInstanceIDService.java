@@ -10,7 +10,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
+//FCM을 이용하기 위한 클래스
 public class FirebaseInstanceIDService extends FirebaseMessagingService {
 
     /**
